@@ -1,1 +1,52 @@
+clc; clear; close all;
 
+% Load the Image
+img = imread('sample.jpg');
+figure, imshow(img), title('Original Image');
+
+% Convert to Grayscale
+if size(img, 3) == 3
+    gray_img = rgb2gray(img);
+else
+    gray_img = img;
+end
+figure, imshow(gray_img), title('Grayscale Image');
+
+% Apply Gaussian Filtering
+filtered_img = imgaussfilt(gray_img, 2);
+figure, imshow(filtered_img), title('Gaussian Filtered Image');
+
+% Edge Detection using Canny
+edge_img = edge(filtered_img, 'Canny');
+figure, imshow(edge_img), title('Canny Edge Detection');
+
+% Image Segmentation using Thresholding
+bw_img = imbinarize(filtered_img);
+figure, imshow(bw_img), title('Segmented Image (Thresholding)');
+
+% Contrast Enhancement using Histogram Equalization
+enhanced_img = histeq(gray_img);
+figure, imshow(enhanced_img), title('Contrast Enhanced Image');
+
+% Morphological Operations (Erosion and Dilation)
+se = strel('disk', 3);
+eroded_img = imerode(bw_img, se);
+dilated_img = imdilate(bw_img, se);
+figure, imshow(eroded_img), title('Eroded Image');
+figure, imshow(dilated_img), title('Dilated Image');
+
+% Frequency Domain Analysis using Fourier Transform
+fft_img = fft2(double(gray_img));
+fft_shifted = fftshift(log(1 + abs(fft_img)));
+figure, imshow(mat2gray(fft_shifted)), title('Frequency Domain Representation');
+
+% Laplacian Edge Detection
+laplacian_filter = fspecial('laplacian', 0.2);
+laplacian_img = imfilter(gray_img, laplacian_filter, 'replicate');
+figure, imshow(laplacian_img, []), title('Laplacian Edge Detection');
+
+% Save Processed Images
+imwrite(edge_img, 'processed_edge.jpg');
+imwrite(bw_img, 'processed_segmented.jpg');
+imwrite(enhanced_img, 'processed_contrast.jpg');
+imwrite(dilated_img, 'processed_dilated.jpg');
